@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersAsync } from "../features/userSlice";
-import { Plus, Search, Trash, UserPen } from "lucide-react";
+import { Eye, Plus, Search, Trash, UserPen } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { toast } from "react-toastify";
 import UserFormModal from "./UserFormModal";
 import DeleteModal from "./DeleteModal";
-
+import { Link } from "react-router-dom";
 
 function UserView() {
   const { users, status, error } = useSelector((state) => state.users);
@@ -68,6 +68,7 @@ function UserView() {
       <div className="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+            <h1 className="font-bold text-lg">User Management</h1>
             <div className="w-full md:w-1/2">
               <form className="flex items-center">
                 <label htmlFor="user-search" className="sr-only">
@@ -104,28 +105,60 @@ function UserView() {
             <table className="w-full text-sm text-left text-white dark:text-gray-400">
               <thead className="text-xs font-bold uppercase bg-slate-500 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th scope="col" className="px-4 py-3">Id</th>
-                  <th scope="col" className="px-4 py-3">Name</th>
-                  <th scope="col" className="px-4 py-3">City</th>
-                  <th scope="col" className="px-4 py-3">Email</th>
-                  <th scope="col" className="px-4 py-3">Phone</th>
-                  <th scope="col" className="px-4 py-3">Company Name</th>
-                  <th scope="col" className="px-4 py-3">Website</th>
-                  <th scope="col" className="px-4 py-3"><span className="sr-only">Actions</span></th>
+                  <th scope="col" className="px-4 py-3">
+                    Id
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Name
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    City
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Email
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Phone
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Company Name
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Website
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {status === "loading" ? (
                   [...Array(10)].map((_, idx) => (
                     <tr key={idx}>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
-                      <td><Skeleton height={40} /></td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
+                      <td>
+                        <Skeleton height={40} />
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -133,7 +166,9 @@ function UserView() {
                     {filteredUsers.map((user) => (
                       <tr
                         key={user.id}
-                        className={`border-b ${user.id % 2 === 0 ? "bg-slate-500" : "bg-zinc-500"} dark:border-gray-700`}
+                        className={`border-b ${
+                          user.id % 2 === 0 ? "bg-slate-500" : "bg-zinc-500"
+                        } dark:border-gray-700`}
                       >
                         <th
                           scope="row"
@@ -146,8 +181,13 @@ function UserView() {
                         <td className="px-4 py-3">{user.email}</td>
                         <td className="px-4 py-3">{user.phone}</td>
                         <td className="px-4 py-3">{user?.company?.name}</td>
-                        <td className="px-4 py-3">{user?.website ? user?.website : null}</td>
-                        <td className="px-4 py-3 gap-2 flex items-center justify-end">
+                        <td className="px-4 py-3">
+                          {user?.website ? user?.website : null}
+                        </td>
+                        <td className="px-4 py-3 gap-2 flex items-center justify-center">
+                          <Link to={`/user/${user.id}`}>
+                            <Eye />
+                          </Link>
                           {isModalOpen && (
                             <UserFormModal
                               user={selectedUser}

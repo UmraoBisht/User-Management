@@ -1,11 +1,18 @@
 // userSlice.js
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUsers, createUser, updateUser, deleteUser } from "./userApi";
+import {
+  fetchUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  fetchUserById,
+} from "./userApi";
 import { toast } from "react-toastify"; // Import toast notifications
 
 const initialState = {
   users: [],
+  selectedUser: null,
   status: "idle",
   error: null,
 };
@@ -61,10 +68,22 @@ export const deleteUserAsync = createAsyncThunk(
     try {
       await deleteUser(userId);
       toast.success("User deleted successfully"); // Show success toast
-      console.log(userId);
       return userId; // Return the ID of the deleted user
     } catch (error) {
       toast.error("Failed to delete user"); // Show error toast
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch user by id
+export const fetchUserByIdAsync = createAsyncThunk(
+  "users/fetchUserById",
+  async (userId, thunkAPI) => {
+    try {
+      const response = await fetchUserById(userId);
+      return response;
+    } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -79,14 +98,25 @@ const usersSlice = createSlice({
       // Fetch Users
       .addCase(fetchUsersAsync.pending, (state) => {
         state.status = "loading";
-        state.loading = true; // Set loading to true
       })
       .addCase(fetchUsersAsync.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.users = action.payload;
-        state.loading = false; // Set loading to false
       })
       .addCase(fetchUsersAsync.rejected, (state, action) => {
+        state.error = action.payload;
+        state.status = "failed";
+      })
+
+      // Fetch User by id
+      .addCase(fetchUserByIdAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchUserByIdAsync.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.selectedUser = action.payload;
+      })
+      .addCase(fetchUserByIdAsync.rejected, (state, action) => {
         state.error = action.payload;
         state.status = "failed";
       })
